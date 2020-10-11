@@ -1,13 +1,23 @@
 import { dbService } from 'fbase';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const Home = () => {
+const Home = ({userObject}) => {
 	const [tweet, setTweet] = useState('');
+	const [tweets, setTweets] = useState([]);
+
+	useEffect( () => {
+		dbService.collection('tweets').onSnapshot(snapshot => {
+			const tweetArray = snapshot.docs.map(document => ({id: document.id, ...document.data() }));
+			setTweets(tweetArray);
+		});
+	}, []);
+
 	const onSubmit = async (event) => {
 		event.preventDefault();
 		await dbService.collection('tweets').add({
-			tweet,
+			text: tweet,
 			createdAt: Date.now(),
+			creatorId: userObject.uid,
 		});
 		setTweet('');
 	}
@@ -15,6 +25,7 @@ const Home = () => {
 		const {target:{value}} = event;
 		setTweet(value);
 	}
+	console.log(tweets);
 	return (
 		<div>
 			<form onSubmit={onSubmit}>
@@ -26,6 +37,13 @@ const Home = () => {
 					onChange={onChange} />
 				<input type="submit" value="tweet" />
 			</form>
+			<div>
+				{tweets.map(tweet => 
+					<div key={tweet.id}>
+						<h4>{tweet.text}</h4>
+					</div>
+				)}
+			</div>
 		</div>
 	)
 }
