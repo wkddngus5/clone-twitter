@@ -1,29 +1,42 @@
 import React, {useEffect, useState} from 'react';
 import AppRouter from 'components/Router';
 import {authService} from 'fbase';
-import { auth } from 'firebase';
 
 function App() {
 	const [init, setInit] = useState(false);
-	const [isLoggedIn, setIsLoggedIn] = useState(authService.currentUser);
 	const [userObject, setUserObject] = useState(null);
 
 	useEffect(() => {
 		authService.onAuthStateChanged((user) => {
 			if (user) {
-				setIsLoggedIn(true);
-				setUserObject(user);
+				setUserObject({
+					displayName: user.displayName,
+					uid: user.uid,
+					updateProfile: (args) => user.updateProfile(args),
+				});
 			} else {
-				setIsLoggedIn(false);
 				setUserObject(null);
 			}
 			setInit(true);
 		});
 	}, []);
+
+	const refreshUser = () => {
+		const user = authService.currentUser;
+		setUserObject({
+			displayName: user.displayName,
+			uid: user.uid,
+			updateProfile: (args) => user.updateProfile(args),
+		});
+	}
+
 	return (
 		<>
-			{init ? <AppRouter isLoggedIn={isLoggedIn} userObject={userObject} /> : 'Initializing...'  }
-			<footer>&copy; Twitter {new Date().getFullYear()}</footer>
+			{init ? <AppRouter
+				isLoggedIn={!!userObject}
+				userObject={userObject}
+				refreshUser={refreshUser} /> : 'Initializing...'  }
+			{/* <footer>&copy; Twitter {new Date().getFullYear()}</footer> */}
 		</>
 	);
 }
