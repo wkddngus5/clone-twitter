@@ -6,7 +6,7 @@ import { dbService, storageService } from 'fbase';
 const Home = ({userObject}) => {
 	const [tweet, setTweet] = useState('');
 	const [tweets, setTweets] = useState([]);
-	const [attachment, setAttachment] = useState();
+	const [attachment, setAttachment] = useState('');
 
 	useEffect( () => {
 		dbService.collection('tweets').onSnapshot(snapshot => {
