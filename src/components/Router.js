@@ -5,10 +5,10 @@ import Auth from '../routes/Auth';
 import Home from '../routes/Home';
 import Navigation from './Navigation';
 
-const AppRouter = ({isLoggedIn, userObject}) => {
+const AppRouter = ({isLoggedIn, userObject, refreshUser}) => {
 	return (
 		<Router>
-			{isLoggedIn && <Navigation /> }
+			{isLoggedIn && <Navigation userObject={userObject} /> }
 			<Switch>
 				{isLoggedIn ? (
 					<>
@@ -16,7 +16,9 @@ const AppRouter = ({isLoggedIn, userObject}) => {
 							<Home userObject={userObject} />
 						</Route>
 						<Route exact path="/profile">
-							<Profile userObject={userObject} />
+							<Profile
+								userObject={userObject}
+								refreshUser={refreshUser} />
 						</Route>
 						<Redirect from="*" to="/" />
 					</>
