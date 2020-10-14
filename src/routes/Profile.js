@@ -8,12 +8,12 @@ export default ({userObject, refreshUser}) => {
 	const onLogOutClick = () => {
 		authService.signOut();
 		history.push('/');
+		refreshUser();
 	}
 	
-
 	useEffect(() => {
 		const getMyTweets = async () => {
-			const tweets = await dbService
+			await dbService
 				.collection('tweets')
 				.where('creatorId', '==', userObject.uid)
 				.orderBy('createdAt')
